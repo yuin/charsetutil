@@ -12,10 +12,10 @@ go get github.com/yuin/charsetutil
 
 - `Decode*` : Converts from the specified charset to UTF-8.
 - `Encode*` : Converts from the UTF-8 to specified charset.
+- `Guess*` : Guesses a charcter set.
 
 - `MustDecode*` : Same as `Decode*`, but panics when errors occur
 - `MustEncode*` : Same as `Encode*`, but panics when errors occur
-
 
 ```go
 b, err = EncodeString("こんにちわ", "Windows-31J")
@@ -35,6 +35,11 @@ s = MustDecodeString(string(source), "Windows-31J")
 s = MustDecode(source, "Windows-31J")
 s = MustDecodeBytes(source, "Windows-31J")
 s = MustDecodeReader(bytes.NewReader(source), "Windows-31J")
+
+cs, err := GuessString(string(source))
+cs, err := GuessBytes(source)
+cs, err := GuessReader(bytes.NewReader(source))
+cs, err := Guess(source)
 ```
 
 ## Supported character sets

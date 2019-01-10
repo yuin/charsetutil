@@ -160,3 +160,33 @@ func TestDecodeError(t *testing.T) {
 
 	assertPanic(func() string { return MustDecodeReader(bytes.NewReader(source), "unknown") })
 }
+
+func TestGuess(t *testing.T) {
+	sourceEuc := []byte{'\xa4', '\xa2', '\xa4', '\xa4', '\xa4', '\xa6', '\xa4', '\xa8', '\xa4', '\xaa', '\x0d', '\x0a', '\xa5', '\xbd', '\xc7', '\xbd', '\x0d', '\x0a', '\x74', '\x65', '\x73', '\x74', '\x0d', '\x0a', '\x8e', '\xb6', '\x8e', '\xb7', '\x8e', '\xb8', '\x8e', '\xb9', '\x8e', '\xba'}
+	// sourceSjis := []byte{'\x82', '\xa0', '\x82', '\xa2', '\x82', '\xa4', '\x82', '\xa6', '\x82', '\xa8', '\x0d', '\x0a', '\x83', '\x5c', '\x94', '\x5c', '\x0d', '\x0a', '\x74', '\x65', '\x73', '\x74', '\x0d', '\x0a', '\xb6', '\xb7', '\xb8', '\xb9', '\xba'}
+
+	assert := func(r CharsetGuess, charset, language string, err error) {
+		if err != nil {
+			t.Errorf("Failed:%+v", err)
+		}
+		if r.Charset() != charset {
+			t.Errorf("'%s' expected, but got '%s'", charset, r.Charset())
+		}
+		if r.Language() != language {
+			t.Errorf("'%s' expected, but got '%s'", language, r.Language())
+		}
+	}
+
+	result, err := Guess(sourceEuc)
+	assert(result, "EUC-JP", "ja", err)
+
+	result, err = GuessBytes(sourceEuc)
+	assert(result, "EUC-JP", "ja", err)
+
+	result, err = GuessReader(bytes.NewReader(sourceEuc))
+	assert(result, "EUC-JP", "ja", err)
+
+	result, err = GuessString("ああｲｲ”haa")
+	assert(result, "UTF-8", "", err)
+
+}
